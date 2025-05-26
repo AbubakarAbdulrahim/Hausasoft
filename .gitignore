@@ -1,0 +1,32 @@
+# Ignore Python virtual environment
+venv/
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Node.js modules
+node_modules/
+
+# Ignore sensitive files
+.env
+*.env.local
+*.env.*
+
+# Ignore build output directories (for frontend)
+build/
+.next/
+dist/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Add any other project-specific files or directories to ignore here
+# e.g., database files:
+# db.sqlite3
+# media/ 

@@ -1,0 +1,30 @@
+.chat-page {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding: 20px;
+}
+
+.chat-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.chat-header h1 {
+  font-size: 2rem;
+  color: #1a73e8;
+  margin-bottom: 8px;
+}
+
+.chat-header p {
+  color: #5f6368;
+  font-size: 1.1rem;
+  margin: 0;
+} 

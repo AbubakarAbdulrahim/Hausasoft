@@ -1,34 +1,85 @@
 <html>
-<head>
-  <style>
-    body { font-family: 'Arial', sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f4f4f4; }
-    .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-top: 4px solid #22c55e; }
-    .header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eeeeee; margin-bottom: 20px; }
-    .header img { max-width: 150px; height: auto; }
-    .content { margin-bottom: 20px; }
-    .button { display: inline-block; background-color: #22c55e; color: #ffffff !important; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
-    .footer { text-align: center; padding-top: 20px; border-top: 1px solid #eeeeee; margin-top: 20px; font-size: 12px; color: #888888; }
-    .footer a { color: #888888; text-decoration: none; }
-  </style>
-</head>
-<body>
-  <div class="email-container">
-    <div class="header">
-      <img src="{{ site_url }}{{ static 'img/logo_green.png' }}" alt="Hausasoft E-Learn Logo">
+  <head>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        padding: 20px 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-top: 4px solid #22c55e;
+      }
+      .header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eeeeee;
+        margin-bottom: 20px;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+      .content {
+        margin-bottom: 20px;
+      }
+      .button {
+        display: inline-block;
+        background-color: #22c55e;
+        color: #ffffff !important;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+      .footer {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #eeeeee;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #888888;
+      }
+      .footer a {
+        color: #888888;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header">
+        {% load static %}
+        <img src="{% static 'img/logo_green.png' %}" alt="Logo" />
+      </div>
+      <div class="content">
+        <h2>Welcome to Hausasoft E-Learn!</h2>
+        <p>Hello {{ name }},</p>
+        <p>
+          Thank you for registering at Hausasoft E-Learn. We're excited to have
+          you join our learning community!
+        </p>
+        <p>
+          Get started by exploring our courses and begin your learning journey
+          today.
+        </p>
+        <p style="text-align: center">
+          <a href="{{ site_url }}/courses" class="button">Explore Courses</a>
+        </p>
+      </div>
+      <div class="footer">
+        <p>&copy; {{ year }} Hausasoft E-Learn. All rights reserved.</p>
+        <p>
+          <a href="{{ site_url }}">Visit Website</a> |
+          <a href="mailto:{{ contact_email }}">Contact Us</a>
+        </p>
+      </div>
     </div>
-    <div class="content">
-      <h2>Welcome to Hausasoft E-Learn!</h2>
-      <p>Hello {{ name }},</p>
-      <p>Thank you for registering at Hausasoft E-Learn. We're excited to have you join our learning community!</p>
-      <p>Get started by exploring our courses and begin your learning journey today.</p>
-      <p style="text-align: center;">
-        <a href="{{ site_url }}/courses" class="button">Explore Courses</a>
-      </p>
-    </div>
-    <div class="footer">
-      <p>&copy; {{ year }} Hausasoft E-Learn. All rights reserved.</p>
-      <p><a href="{{ site_url }}">Visit Website</a> | <a href="mailto:{{ contact_email }}">Contact Us</a></p>
-    </div>
-  </div>
-</body>
-</html> 
+  </body>
+</html>

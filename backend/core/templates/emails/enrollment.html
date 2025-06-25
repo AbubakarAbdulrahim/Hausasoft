@@ -14,7 +14,9 @@
 <body>
   <div class="email-container">
     <div class="header">
-      <img src="{{ site_url }}{{ static 'img/logo_green.png' }}" alt="Hausasoft E-Learn Logo">
+      {% load static %}
+      <img src="{% static 'img/logo_green.png' %}" alt="Logo" />
+
     </div>
     <div class="content">
       <h2>Enrollment Confirmation</h2>

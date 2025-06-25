@@ -1,17 +1,18 @@
-export const API_BASE_URL = 'http://localhost:8000/api';
+// src/api/config.ts
+export const API_BASE_URL = "https://hausasoft.onrender.com/api"; //backend domain
 
 export const getHeaders = () => {
-    const access = localStorage.getItem('access');
-    return {
-        'Content-Type': 'application/json',
-        ...(access ? { 'Authorization': `Bearer ${access}` } : {})
-    };
+  const access = localStorage.getItem("access");
+  return {
+    "Content-Type": "application/json",
+    ...(access ? { Authorization: `Bearer ${access}` } : {}),
+  };
 };
 
 export const handleResponse = async (response: Response) => {
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'An error occurred');
-    }
-    return response.json();
-}; 
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "An error occurred");
+  }
+  return response.json();
+};

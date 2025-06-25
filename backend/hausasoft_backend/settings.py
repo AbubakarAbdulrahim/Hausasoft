@@ -28,8 +28,11 @@ INSTALLED_APPS = [
     'core',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'corsheaders',
+    'dj_rest_auth.registration',
+    'dj_rest_auth',
 
     'allauth',
     'allauth.account',

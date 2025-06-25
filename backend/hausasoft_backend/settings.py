@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # Required by allauth
+    # 'django.contrib.sites',  # Commented: used by allauth
 
     # Third-party apps
     'channels',
@@ -32,13 +32,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'dj_rest_auth',
-    'dj_rest_auth.registration',
+    # 'dj_rest_auth.registration',  # Commented: depends on allauth
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.facebook',
+    # 'allauth',                          # Commented: allauth
+    # 'allauth.account',                  # Commented: allauth
+    # 'allauth.socialaccount',           # Commented: allauth
+    # 'allauth.socialaccount.providers.google',  # Commented: social login
+    # 'allauth.socialaccount.providers.facebook',  # Commented: social login
 
     # Your custom apps
     'core',
@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    # 'allauth.account.middleware.AccountMiddleware',  # Commented
 ]
 
 ROOT_URLCONF = 'hausasoft_backend.urls'
@@ -147,11 +147,11 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # AUTHENTICATION SYSTEM
-SITE_ID = 1
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
+# SITE_ID = 1  # Commented: required by allauth
+# AUTHENTICATION_BACKENDS = [             # Commented: used by allauth
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# ]
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -167,19 +167,19 @@ REST_AUTH = {
     'TOKEN_MODEL': None,
 }
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'}
-    },
-    'facebook': {
-        'METHOD': 'oauth2',
-        'SCOPE': ['email', 'public_profile'],
-        'FIELDS': ['id', 'email', 'name', 'first_name', 'last_name', 'picture', 'short_name'],
-        'VERIFIED_EMAIL': False,
-        'VERSION': 'v18.0',
-    },
-}
+# SOCIALACCOUNT_PROVIDERS = {  # Commented: allauth social config
+#     'google': {
+#         'SCOPE': ['profile', 'email'],
+#         'AUTH_PARAMS': {'access_type': 'online'}
+#     },
+#     'facebook': {
+#         'METHOD': 'oauth2',
+#         'SCOPE': ['email', 'public_profile'],
+#         'FIELDS': ['id', 'email', 'name', 'first_name', 'last_name', 'picture', 'short_name'],
+#         'VERIFIED_EMAIL': False,
+#         'VERSION': 'v18.0',
+#     },
+# }
 
 # GEMINI API KEY
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')

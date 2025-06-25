@@ -1,0 +1,1 @@
+web: gunicorn hausasoft_backend.wsgi

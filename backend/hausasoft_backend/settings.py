@@ -16,23 +16,23 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # APPLICATIONS
 INSTALLED_APPS = [
+    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
+    'django.contrib.sites',  # Required by allauth
 
+    # Third-party apps
     'channels',
-    'core',
-
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
-    'corsheaders',
-    'dj_rest_auth.registration',
     'dj_rest_auth',
+    'dj_rest_auth.registration',
 
     'allauth',
     'allauth.account',
@@ -40,13 +40,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
-    'dj_rest_auth',
-    'dj_rest_auth.registration',
+    # Your custom apps
+    'core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# TIME & LANG
+# TIME & LANGUAGE
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -122,14 +122,14 @@ REST_FRAMEWORK = {
     ),
 }
 
-# JWT SETTINGS
+# JWT CONFIG
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME', 60))),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME', 1))),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# EMAIL CONFIG
+# EMAIL SETTINGS
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -146,13 +146,19 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# AUTH SYSTEM
-REST_USE_JWT = True
+# AUTHENTICATION SYSTEM
+SITE_ID = 1
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
+REST_USE_JWT = True
 REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'hausasoft-auth',
@@ -160,8 +166,6 @@ REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'core.serializers.UserSerializer',
     'TOKEN_MODEL': None,
 }
-
-SITE_ID = 1
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -177,9 +181,9 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-# GEMINI AI
+# GEMINI API KEY
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-# COOKIES SECURE FOR PRODUCTION
+# PRODUCTION SECURITY
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True

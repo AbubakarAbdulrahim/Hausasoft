@@ -29,7 +29,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('payments/webhook/', payment_webhook, name='payment_webhook'),
     path('auth/', include('dj_rest_auth.urls')),
-    path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('auth/social/', include('allauth.socialaccount.urls')),
+    #path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    #path('auth/social/', include('allauth.socialaccount.urls')),
     path("learn-with-ai/", learn_with_ai, name="learn_with_ai"),
 ] 

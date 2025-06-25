@@ -88,6 +88,8 @@ CHANNEL_LAYERS = {
 
 # DATABASE
 DATABASE_URL = os.getenv('DATABASE_URL')
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is not set.")
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
 }
@@ -141,8 +143,14 @@ SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 
 # CORS SETTINGS
 CORS_ALLOW_ALL_ORIGINS = False
+# To allow additional origins, add their URLs to the list below, e.g.:
+# CORS_ALLOWED_ORIGINS = [
+#     "https://www.hausasoft.com.ng",
+#     "https://another-allowed-origin.com",
+#     "http://localhost:3000",
+# ]
 CORS_ALLOWED_ORIGINS = [
-    "https://hausasoft.com.ng",
+    "https://www.hausasoft.com.ng",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -156,7 +164,7 @@ CORS_ALLOW_CREDENTIALS = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 REST_USE_JWT = True
 REST_AUTH = {
@@ -164,7 +172,6 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'hausasoft-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'hausasoft-refresh',
     'USER_DETAILS_SERIALIZER': 'core.serializers.UserSerializer',
-    'TOKEN_MODEL': None,
 }
 
 # SOCIALACCOUNT_PROVIDERS = {  # Commented: allauth social config
@@ -178,9 +185,10 @@ REST_AUTH = {
 #         'FIELDS': ['id', 'email', 'name', 'first_name', 'last_name', 'picture', 'short_name'],
 #         'VERIFIED_EMAIL': False,
 #         'VERSION': 'v18.0',
-#     },
-# }
-
+# PRODUCTION SECURITY
+# Only enable secure cookies in production (when DEBUG is False)
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 # GEMINI API KEY
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 

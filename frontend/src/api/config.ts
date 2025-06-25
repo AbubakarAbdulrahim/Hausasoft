@@ -1,8 +1,8 @@
 // src/api/config.ts
-export const API_BASE_URL = "https://hausasoft.onrender.com/api"; //backend domain
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000/api";
 
 export const getHeaders = () => {
-  const access = localStorage.getItem("access");
+  const access = typeof window !== "undefined" ? localStorage.getItem("access") : null;
   return {
     "Content-Type": "application/json",
     ...(access ? { Authorization: `Bearer ${access}` } : {}),
@@ -11,8 +11,16 @@ export const getHeaders = () => {
 
 export const handleResponse = async (response: Response) => {
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || "An error occurred");
+    let errorDetail = "An error occurred";
+    throw new Error(
+      `Error ${response.status} ${response.statusText}: ${error.detail || "An error occurred"}`
+    );
+      const error = await response.json();
+      errorDetail = error.detail || errorDetail;
+    } catch (e) {
+      // response is not valid JSON, keep default error message
+    }
+    throw new Error(errorDetail);
   }
   return response.json();
 };

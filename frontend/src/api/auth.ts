@@ -13,7 +13,11 @@ export interface RegisterData extends LoginData {
     name: string;
 }
 
-// Login API call
+/**
+ * Sends a login request to the API with the provided user credentials.
+ * @param {LoginData} data - The user's login credentials (email and password).
+ * @returns {Promise<any>} The response from the API after attempting to log in.
+ */
 export const login = async (data: LoginData) => {
     const response = await fetch(`${API_BASE_URL}/auth/login/`, {
         method: 'POST',
@@ -22,8 +26,8 @@ export const login = async (data: LoginData) => {
     });
     return handleResponse(response);
 };
-
-// Register API call
+ * @returns {Promise<any>} The response from the API after attempting to register the user.
+ */
 export const register = async (data: RegisterData) => {
     const response = await fetch(`${API_BASE_URL}/auth/register/`, {
         method: 'POST',
@@ -32,11 +36,18 @@ export const register = async (data: RegisterData) => {
     });
     return handleResponse(response);
 };
-
-// Fetch user profile (authenticated user info)
+        body: JSON.stringify(data),
+/**
+ * Fetches the authenticated user's profile information from the API.
+ * @returns {Promise<any>} The user's profile data from the API.
+ */
 export const fetchUserProfile = async () => {
     const response = await fetch(`${API_BASE_URL}/users/me/`, {
         method: 'GET',
+        headers: getHeaders(),
+    });
+    return handleResponse(response);
+};
         headers: getHeaders(),
     });
     return handleResponse(response);

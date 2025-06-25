@@ -1,10 +1,34 @@
 <html>
-  <body style="font-family: Arial, sans-serif;">
-    <h2>Student Completed Your Course</h2>
-    <p>Hello {{ instructor_name }},</p>
-    <p>{{ student_name }} has completed your course <strong>{{ course_title }}</strong>.</p>
-    <p>Congratulations on helping your student achieve their goal!</p>
-    <br>
-    <p>Best regards,<br>Hausasoft E-Learn Team</p>
-  </body>
+<head>
+  <style>
+    body { font-family: 'Arial', sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-top: 4px solid #22c55e; }
+    .header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eeeeee; margin-bottom: 20px; }
+    .header img { max-width: 150px; height: auto; }
+    .content { margin-bottom: 20px; }
+    .button { display: inline-block; background-color: #22c55e; color: #ffffff !important; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+    .footer { text-align: center; padding-top: 20px; border-top: 1px solid #eeeeee; margin-top: 20px; font-size: 12px; color: #888888; }
+    .footer a { color: #888888; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <img src="{{ site_url }}{{ static 'img/logo_green.png' }}" alt="Hausasoft E-Learn Logo">
+    </div>
+    <div class="content">
+      <h2>Student Completed Your Course</h2>
+      <p>Hello {{ instructor_name }},</p>
+      <p>Great news! <strong>{{ student_name }}</strong> has completed your course: <strong>{{ course_title }}</strong>.</p>
+      <p>Congratulations on helping your student achieve their learning goal!</p>
+      <p style="text-align: center;">
+        <a href="{{ site_url }}/dashboard/instructor/courses" class="button">View My Courses</a>
+      </p>
+    </div>
+    <div class="footer">
+      <p>&copy; {{ year }} Hausasoft E-Learn. All rights reserved.</p>
+      <p><a href="{{ site_url }}">Visit Website</a> | <a href="mailto:{{ contact_email }}">Contact Us</a></p>
+    </div>
+  </div>
+</body>
 </html> 

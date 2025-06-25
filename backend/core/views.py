@@ -260,32 +260,12 @@ def send_notification_email(subject, message, recipient_list, template=None, con
 @receiver(post_save, sender=get_user_model())
 def user_registered(sender, instance, created, **kwargs):
     if created:
-        try:
-            subject = 'Welcome to Hausasoft E-Learn!'
-            context = {'name': instance.get_full_name() or instance.email}
-            message = render_to_string('emails/welcome.html', context)
-            send_notification_email(subject, message, [instance.email], template='emails/welcome.html', context=context)
-            # Create notification
-            from .models import Notification
-            Notification.objects.create(user=instance, message='Welcome to Hausasoft E-Learn!', type='info')
-            # Broadcast notification (if channels are set up)
-            # from channels.layers import get_channel_layer
-            # from asgiref.sync import async_to_sync
-            # channel_layer = get_channel_layer()
-            # if channel_layer:
-            #     async_to_sync(channel_layer.group_send)(
-            #         f'user_{instance.id}_notifications',
-            #         {
-            #             'type': 'send_notification',
-            #             'notification': {'message': 'Welcome to Hausasoft E-Learn!', 'type': 'info'}
-            #         }
-            #     )
-
-        except Exception as e:
-            # Log the error but don't prevent registration from succeeding
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error("Error in user_registered signal handler: %s", e, exc_info=True)
+        subject = 'Welcome to Hausasoft E-Learn!'
+        context = {'name': instance.get_full_name() or instance.email}
+        message = render_to_string('emails/welcome.html', context)
+        send_notification_email(subject, message, [instance.email], template='emails/welcome.html', context=context)
+        Notification.objects.create(user=instance, message='Welcome to Hausasoft E-Learn!', type='info')
+        broadcast_notification(instance.id, instance)
 
 # Enrollment email notification (student)
 @receiver(post_save, sender=Enrollment)
@@ -438,24 +418,16 @@ class RegisterView(APIView):
     def post(self, request):
         try:
             data = request.data
-            required_fields = ['name', 'email', 'password', 'confirmPassword', 'role']
-            
-            # 1. Check for missing fields
+            required_fields = ['name', 'email', 'password', 'confirm_password', 'role']
             for field in required_fields:
                 if not data.get(field):
-                    clean_field_name = field.replace('Password', ' Password')
                     return Response(
-                        {'error': f'{clean_field_name.title()} is required.'}, 
+                        {'error': f'{field.title()} is required.'}, 
                         status=status.HTTP_400_BAD_REQUEST
                     )
 
-            name = data.get('name')
-            email = data.get('email')
-            password = data.get('password')
-            confirm_password = data.get('confirmPassword') # Use correct backend variable name internally
-            role = data.get('role')
-
-            # 2. Password policy validation
+            # Password policy: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+            password = data['password']
             password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$'
             if not re.match(password_regex, password):
                 return Response(
@@ -463,56 +435,46 @@ class RegisterView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 3. Email format validation
-            if '@' not in email:
+            if '@' not in data['email']:
                 return Response(
                     {'error': 'Please enter a valid email address.'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 4. Password match validation (using internal variable name)
-            if password != confirm_password:
+            if data['password'] != data['confirm_password']:
                 return Response(
                     {'error': 'Passwords do not match.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
             User = get_user_model()
-            # 5. Check if email already exists
-            if User.objects.filter(email=email).exists():
+            if User.objects.filter(email=data['email']).exists():
                 return Response(
                     {'error': 'This email is already registered. Please use a different email or try logging in.'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 6. Validate role
             valid_roles = ['student', 'instructor']
-            if role not in valid_roles:
+            if data['role'] not in valid_roles:
                 return Response(
                     {'error': 'Invalid role selected.'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # If all validations pass, create user
             user = User.objects.create(
-                username=email, # Assuming email is used as username
-                email=email,
-                first_name=name,
-                role=role,
-                password=make_password(password)
+                username=data['email'],
+                email=data['email'],
+                first_name=data['name'],
+                role=data['role'],
+                password=make_password(data['password'])
             )
 
-            # Return 201 Created on success
-            return Response(
-                {'message': 'Registration successful! You can now log in with your email and password.'},
-                status=status.HTTP_201_CREATED
-            )
+            return Response({
+                'success': True,
+                'message': 'Registration successful! You can now log in with your email and password.'
+            }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            # Catch unexpected server errors and return 500
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error("Registration error: %s", e, exc_info=True)
             return Response({
                 'error': 'An unexpected error occurred. Please try again later.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -527,5 +489,15 @@ def learn_with_ai(request):
     prompt = request.GET.get("prompt")
     if not prompt:
         return JsonResponse({"error": "No prompt provided."}, status=400)
-    result = get_gemini_response(prompt)
+    # Prepend instruction to prompt
+    full_prompt = f"Explain: {prompt}"
+    result = get_gemini_response(full_prompt)
+    # Remove Markdown formatting (e.g., **bold**)
+    if 'text' in result:
+        # Remove **bold** and __bold__
+        result['text'] = re.sub(r'(\*\*|__)(.*?)\1', r'\2', result['text'])
+        # Remove *italic* and _italic_
+        #result['text'] = re.sub(r'(\*|_)(.*?)\1', r'\2', result['text'])
+        # Remove inline code `code`
+        #result['text'] = re.sub(r'`([^`]*)`', r'\1', result['text'])
     return JsonResponse(result)

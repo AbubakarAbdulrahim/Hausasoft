@@ -7,6 +7,7 @@ __pycache__/
 *.pyo
 
 # Ignore Node.js modules
+
 node_modules/
 
 # Ignore sensitive files
@@ -28,5 +29,5 @@ Thumbs.db
 
 # Add any other project-specific files or directories to ignore here
 # e.g., database files:
-# db.sqlite3
-# media/ 
+db.sqlite3
+media/

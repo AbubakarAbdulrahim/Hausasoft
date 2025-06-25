@@ -5,7 +5,6 @@ import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import { useAuth } from '../../hooks/useAuth';
 import { useLanguage } from '../../hooks/useLanguage';
-import GoogleIcon from '../../assets/google.svg';
 import Modal from '../../components/common/Modal';
 
 const RegisterPage: React.FC = () => {

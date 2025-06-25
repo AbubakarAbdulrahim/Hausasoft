@@ -1,1 +1,2 @@
-web: gunicorn hausasoft_backend.wsgi
+web: gunicorn backend/hausasoft_backend.wsgi
+

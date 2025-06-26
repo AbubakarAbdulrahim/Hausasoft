@@ -143,12 +143,6 @@ SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 
 # CORS SETTINGS
 CORS_ALLOW_ALL_ORIGINS = False
-# To allow additional origins, add their URLs to the list below, e.g.:
-# CORS_ALLOWED_ORIGINS = [
-#     "https://www.hausasoft.com.ng",
-#     "https://another-allowed-origin.com",
-#     "http://localhost:3000",
-# ]
 CORS_ALLOWED_ORIGINS = [
     "https://www.hausasoft.com.ng",
 ]

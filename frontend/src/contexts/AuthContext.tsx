@@ -1,20 +1,20 @@
-import React, { createContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 // Configure axios
-axios.defaults.baseURL = 'http://localhost:8000';
-axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.baseURL = "https://hausasoft.onrender.com";
+axios.defaults.headers.common["Content-Type"] = "application/json";
 
 // Add response interceptor for error handling
 axios.interceptors.response.use(
-  response => response,
-  error => {
-    console.error('API Error:', error.response?.data || error.message);
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error.response?.data || error.message);
     // Check for 401 and redirect to login if needed
     if (error.response?.status === 401) {
       // You might want to clear local storage here too
-      localStorage.removeItem('hausasoft_user');
-      localStorage.removeItem('hausasoft_token');
+      localStorage.removeItem("hausasoft_user");
+      localStorage.removeItem("hausasoft_token");
       // window.location.href = '/login'; // Or use navigate from react-router-dom if available outside components
     }
     return Promise.reject(error);
@@ -22,7 +22,7 @@ axios.interceptors.response.use(
 );
 
 // Types
-type UserRole = 'student' | 'instructor' | 'admin';
+type UserRole = "student" | "instructor" | "admin";
 
 export interface User {
   id: string;
@@ -35,52 +35,71 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
-  register: (name: string, email: string, password: string, confirmPassword: string, role: UserRole) => Promise<{ success: boolean; message: string }>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; message: string }>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+    role: UserRole
+  ) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
 }
 
 // Context
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 // Provider
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
-    const storedUser = localStorage.getItem('hausasoft_user');
+    const storedUser = localStorage.getItem("hausasoft_user");
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (e) {
         console.error("Failed to parse user from localStorage", e);
-        localStorage.removeItem('hausasoft_user');
-        localStorage.removeItem('hausasoft_token');
+        localStorage.removeItem("hausasoft_user");
+        localStorage.removeItem("hausasoft_token");
         setUser(null);
       }
     }
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; message: string }> => {
     setLoading(true);
     try {
-      const response = await axios.post<{ access: string }>('/api/auth/token/', { email, password });
+      const response = await axios.post<{ access: string }>(
+        "/api/auth/token/",
+        { email, password }
+      );
       const { access } = response.data;
       // Fetch user profile
-      const userRes = await axios.get<User>('/api/users/me/', {
+      const userRes = await axios.get<User>("/api/users/me/", {
         headers: { Authorization: `Bearer ${access}` },
       });
       setUser(userRes.data);
-      localStorage.setItem('hausasoft_user', JSON.stringify(userRes.data));
-      localStorage.setItem('hausasoft_token', access);
+      localStorage.setItem("hausasoft_user", JSON.stringify(userRes.data));
+      localStorage.setItem("hausasoft_token", access);
       setLoading(false);
-      return { success: true, message: 'Login successful!' };
+      return { success: true, message: "Login successful!" };
     } catch (error: any) {
       setLoading(false);
-      let message = 'Invalid email or password. Please try again.';
+      let message = "Invalid email or password. Please try again.";
       if (error.response?.data?.detail) message = error.response.data.detail;
       return { success: false, message };
     }
@@ -95,30 +114,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ): Promise<{ success: boolean; message: string }> => {
     setLoading(true);
     try {
-      const response = await axios.post<{ success: boolean; message: string }>('/api/auth/register/', {
-        name,
-        email,
-        password,
-        confirmPassword,
-        role
-      });
+      const response = await axios.post<{ success: boolean; message: string }>(
+        "/api/auth/register/",
+        {
+          name,
+          email,
+          password,
+          confirmPassword,
+          role,
+        }
+      );
 
       const { success, message } = response.data;
       setLoading(false);
-      return { success: true, message: message || 'Registration successful! You can now log in.' };
+      return {
+        success: true,
+        message: message || "Registration successful! You can now log in.",
+      };
     } catch (error: any) {
       setLoading(false);
-      const errorMessage = error.response?.data?.error || 
-                         error.response?.data?.message || 
-                         'Registration failed. Please try again.';
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Registration failed. Please try again.";
       return { success: false, message: errorMessage };
     }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('hausasoft_user');
-    localStorage.removeItem('hausasoft_token');
+    localStorage.removeItem("hausasoft_user");
+    localStorage.removeItem("hausasoft_token");
   };
 
   return (

@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
 // Configure axios
-axios.defaults.baseURL = "https://hausasoft.onrender.com/api";
+axios.defaults.baseURL = "https://hausasoft.onrender.com";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 
 // Add response interceptor for error handling

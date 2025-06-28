@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 from datetime import timedelta
+from corsheaders.defaults import default_headers  # ✅ Added for CORS headers
 
 # Load .env file
 load_dotenv()
@@ -16,31 +17,22 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,').split(',')
 
 # APPLICATIONS
 INSTALLED_APPS = [
-    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.sites',  # Commented: used by allauth
 
-    # Third-party apps
+    # Third-party
     'channels',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'dj_rest_auth',
-    # 'dj_rest_auth.registration',  # Commented: depends on allauth
 
-    # 'allauth',                          # Commented: allauth
-    # 'allauth.account',                  # Commented: allauth
-    # 'allauth.socialaccount',           # Commented: allauth
-    # 'allauth.socialaccount.providers.google',  # Commented: social login
-    # 'allauth.socialaccount.providers.facebook',  # Commented: social login
-
-    # Your custom apps
+    # Your apps
     'core',
 ]
 
@@ -48,13 +40,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # ✅ CORS middleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'allauth.account.middleware.AccountMiddleware',  # Commented
 ]
 
 ROOT_URLCONF = 'hausasoft_backend.urls'
@@ -141,20 +132,21 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 
-# CORS SETTINGS
+# ✅ CORS SETTINGS
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "https://www.hausasoft.com.ng",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# AUTHENTICATION SYSTEM
-# SITE_ID = 1  # Commented: required by allauth
-# AUTHENTICATION_BACKENDS = [             # Commented: used by allauth
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# ]
+# ✅ Ensure required headers are allowed
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'access-control-allow-origin',
+    'authorization',
+    'content-type',
+]
 
+# JWT & AUTH SETTINGS
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -168,24 +160,9 @@ REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'core.serializers.UserSerializer',
 }
 
-# SOCIALACCOUNT_PROVIDERS = {  # Commented: allauth social config
-#     'google': {
-#         'SCOPE': ['profile', 'email'],
-#         'AUTH_PARAMS': {'access_type': 'online'}
-#     },
-#     'facebook': {
-#         'METHOD': 'oauth2',
-#         'SCOPE': ['email', 'public_profile'],
-#         'FIELDS': ['id', 'email', 'name', 'first_name', 'last_name', 'picture', 'short_name'],
-#         'VERIFIED_EMAIL': False,
-#         'VERSION': 'v18.0',
 # PRODUCTION SECURITY
-# Only enable secure cookies in production (when DEBUG is False)
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
+
 # GEMINI API KEY
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-
-# PRODUCTION SECURITY
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True

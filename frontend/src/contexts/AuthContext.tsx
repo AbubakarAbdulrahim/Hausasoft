@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     name: string,
     email: string,
     password: string,
-    Confirm_Password: string,
+    ConfirmPassword: string,
     role: UserRole
   ): Promise<{ success: boolean; message: string }> => {
     setLoading(true);
@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           name,
           email,
           password,
-          Confirm_Password, // ✅ Fix: backend expects PascalCase
+          Confirm_Password: ConfirmPassword,
           role,
         }
       );

@@ -111,7 +111,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error: any) {
       setLoading(false);
       const message =
-        error.response?.data?.detail || "Invalid email or password.";
+        error.response?.data?.detail ||
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Invalid email or password.";
       return { success: false, message };
     }
   };
@@ -120,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     name: string,
     email: string,
     password: string,
-    ConfirmPassword: string,
+    confirmPassword: string,
     role: UserRole
   ): Promise<{ success: boolean; message: string }> => {
     setLoading(true);
@@ -131,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           name,
           email,
           password,
-          confirm_password: confirmPassword,
+          confirm_password: ConfirmPassword,
           role,
         }
       );
@@ -145,17 +148,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error: any) {
       setLoading(false);
       const errorMessage =
+        error.response?.data?.detail ||
         error.response?.data?.error ||
         error.response?.data?.message ||
         "Registration failed. Please try again.";
       return { success: false, message: errorMessage };
     }
-  };
-
-  const logout = () => {
-    setUser(null);
     localStorage.removeItem("hausasoft_user");
     localStorage.removeItem("hausasoft_token");
+  };
     if (axios.defaults.headers?.common?.Authorization) {
       delete axios.defaults.headers.common["Authorization"];
     }

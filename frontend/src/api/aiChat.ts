@@ -12,36 +12,27 @@ export const sendMessage = async (message: string) => {
       message,
     });
 
-    if (response.data && typeof response.data === "object" && "text" in response.data) {
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "text" in response.data
+    ) {
+      return response.data.text; // Or whatever structure your API returns
+    } else {
+      throw new Error("Invalid response format from AI API.");
+    }
   } catch (error: unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      // Log full response for debugging
-      console.error("AI API Response Error:", error.response.data);
-  } catch (error: unknown) {
-    // Log the full error object for easier debugging
-    console.error("Full error object:", error);
-
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "response" in error &&
-      typeof (error as any).response === "object" &&
-      (error as any).response !== null &&
-      "data" in (error as any).response
-    ) {
-      const errResponse = (error as { response: { data: { error?: string } } }).response;
-      console.error("AI API Response Error:", errResponse.data);
-      throw new Error(errResponse.data.error || "Failed to get AI response");
+      const errResponse = error.response.data as { error?: string };
+      console.error("AI API Response Error:", errResponse);
+      throw new Error(errResponse.error || "Failed to get AI response");
+    } else {
+      const message =
+        typeof error === "object" && error !== null && "message" in error
+          ? String((error as { message?: unknown }).message)
+          : "Network error occurred";
+      console.error("Network or server error:", message);
+      throw new Error(message);
     }
-
-    const message = typeof error === "object" && error !== null && "message" in error
-      ? String((error as { message?: unknown }).message)
-      : "Network error occurred";
-    console.error("Network or server error:", message);
-    throw new Error(message);
-  }
-
-    console.error("Network or server error:", error.message);
-    throw new Error("Network error occurred");
   }
 };

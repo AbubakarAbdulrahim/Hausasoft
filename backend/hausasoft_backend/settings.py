@@ -166,3 +166,25 @@ SESSION_COOKIE_SECURE = not DEBUG
 
 # GEMINI API KEY
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+# CELERY SETTINGS
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

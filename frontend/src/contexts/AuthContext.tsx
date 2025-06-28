@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           name,
           email,
           password,
-          confirm_password: ConfirmPassword,
+          confirm_password: confirmPassword, // Fixed: was "ConfirmPassword"
           role,
         }
       );
@@ -154,9 +154,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         "Registration failed. Please try again.";
       return { success: false, message: errorMessage };
     }
+  };
+
+  const logout = () => {
+    setUser(null);
     localStorage.removeItem("hausasoft_user");
     localStorage.removeItem("hausasoft_token");
-  };
     if (axios.defaults.headers?.common?.Authorization) {
       delete axios.defaults.headers.common["Authorization"];
     }

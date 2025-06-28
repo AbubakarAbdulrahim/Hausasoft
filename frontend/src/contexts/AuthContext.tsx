@@ -53,7 +53,7 @@ interface AuthContextType {
     name: string,
     email: string,
     password: string,
-    Confirm_Password: string,
+    confirm_password: string,
     role: UserRole
   ) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           name,
           email,
           password,
-          Confirm_Password: ConfirmPassword,
+          confirm_password: confirmPassword,
           role,
         }
       );

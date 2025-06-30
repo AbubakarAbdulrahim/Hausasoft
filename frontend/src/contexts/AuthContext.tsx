@@ -10,9 +10,7 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("API Error:", error.response?.data || error.message);
-    // Check for 401 and redirect to login if needed
     if (error.response?.status === 401) {
-      // You might want to clear local storage here too
       localStorage.removeItem("hausasoft_user");
       localStorage.removeItem("hausasoft_token");
       // window.location.href = '/login'; // Or use navigate from react-router-dom if available outside components
@@ -43,7 +41,7 @@ interface AuthContextType {
     name: string,
     email: string,
     password: string,
-    confirmPassword: string,
+    confirm_password: string,
     role: UserRole
   ) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
@@ -58,11 +56,13 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const storedUser = localStorage.getItem("hausasoft_user");
+  const [user, setUser] = useState<User | null>(
+    storedUser ? JSON.parse(storedUser) : null
+  );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
     const storedUser = localStorage.getItem("hausasoft_user");
     if (storedUser) {
       try {
@@ -88,7 +88,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         { email, password }
       );
       const { access } = response.data;
-      // Fetch user profile
       const userRes = await axios.get<User>("/api/users/me/", {
         headers: { Authorization: `Bearer ${access}` },
       });
@@ -99,8 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return { success: true, message: "Login successful!" };
     } catch (error: any) {
       setLoading(false);
-      let message = "Invalid email or password. Please try again.";
-      if (error.response?.data?.detail) message = error.response.data.detail;
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Invalid email or password.";
       return { success: false, message };
     }
   };
@@ -120,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           name,
           email,
           password,
-          confirmPassword,
+          confirm_password: confirmPassword, // Fixed: was "ConfirmPassword"
           role,
         }
       );
@@ -134,6 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error: any) {
       setLoading(false);
       const errorMessage =
+        error.response?.data?.detail ||
         error.response?.data?.error ||
         error.response?.data?.message ||
         "Registration failed. Please try again.";

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, serializers
 from .models import User, Course, Enrollment, Progress, Achievement, Lesson, Quiz, Question, Option, QuizAttempt, Payment, Certificate, Notification, SupportTicket, Service, TeamMember
 from .serializers import UserSerializer, CourseSerializer, EnrollmentSerializer, ProgressSerializer, AchievementSerializer, LessonSerializer, QuizSerializer, QuestionSerializer, OptionSerializer, QuizAttemptSerializer, PaymentSerializer, CertificateSerializer, NotificationSerializer, SupportTicketSerializer, ServiceSerializer, TeamMemberSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -461,13 +461,17 @@ class RegisterView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
+            # Create user WITHOUT role field (since it doesn't exist in default User model)
             user = User.objects.create(
                 username=data['email'],
                 email=data['email'],
                 first_name=data['name'],
-                role=data['role'],
                 password=make_password(data['password'])
             )
+
+            # Add user to role group
+            role_group, created = Group.objects.get_or_create(name=data['role'])
+            user.groups.add(role_group)
 
             return Response({
                 'success': True,
@@ -475,9 +479,33 @@ class RegisterView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
+            # Better error handling for debugging
+            import traceback
+            print(f"Registration error: {str(e)}")
+            print(f"Full traceback: {traceback.format_exc()}")
+            print(f"Request data: {data}")
+            
             return Response({
-                'error': 'An unexpected error occurred. Please try again later.'
+                'error': f'Registration failed: {str(e)}'  # Show actual error for debugging
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Updated UserSerializer to include role from groups
+class UserSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+    name = serializers.CharField(source='first_name', read_only=True)
+    
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'email', 'name', 'role']
+    
+    def get_role(self, obj):
+        # Get role from user's groups
+        user_groups = obj.groups.values_list('name', flat=True)
+        valid_roles = ['student', 'instructor']
+        for role in valid_roles:
+            if role in user_groups:
+                return role
+        return 'student'  # Default role
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])

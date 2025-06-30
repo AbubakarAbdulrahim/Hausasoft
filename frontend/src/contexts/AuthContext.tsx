@@ -2,8 +2,22 @@ import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
 // Configure axios
-axios.defaults.baseURL = "https://hausasoft.onrender.com";
-axios.defaults.headers.common["Content-Type"] = "application/json";
+axios.defaults.baseURL =
+  process.env.REACT_APP_API_BASE_URL || "https://hausasoft.onrender.com";
+// Remove global Content-Type header to avoid issues with requests like file uploads
+
+// Add request interceptor to set Authorization header if token exists
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("hausasoft_token");
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // Add response interceptor for error handling
 axios.interceptors.response.use(
@@ -15,7 +29,7 @@ axios.interceptors.response.use(
       // You might want to clear local storage here too
       localStorage.removeItem("hausasoft_user");
       localStorage.removeItem("hausasoft_token");
-      // window.location.href = '/login'; // Or use navigate from react-router-dom if available outside components
+      // Optionally, handle redirect to login page here if needed.
     }
     return Promise.reject(error);
   }
@@ -58,8 +72,11 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const storedUser = localStorage.getItem("hausasoft_user");
+  const [user, setUser] = useState<User | null>(
+    storedUser ? JSON.parse(storedUser) : null
+  );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
@@ -145,6 +162,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
     localStorage.removeItem("hausasoft_user");
     localStorage.removeItem("hausasoft_token");
+    // Remove Authorization header from axios defaults
+    if (axios.defaults.headers) {
+      if (axios.defaults.headers.common) {
+        delete axios.defaults.headers.common["Authorization"];
+      }
+    }
   };
 
   return (

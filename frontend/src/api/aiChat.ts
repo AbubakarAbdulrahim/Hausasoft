@@ -8,6 +8,7 @@ export const sendMessage = async (message: string) => {
   }
 
   try {
+<<<<<<< HEAD
     const response = await axios.get(`${API_BASE_URL}/learn-with-ai/`, {
       params: { message },
     });
@@ -22,5 +23,33 @@ export const sendMessage = async (message: string) => {
 
     console.error("Network or server error:", error.message);
     throw new Error("Network error occurred");
+=======
+    const response = await axios.post(`${API_BASE_URL}/learn-with-ai/`, {
+      message,
+    });
+
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "text" in response.data
+    ) {
+      return response.data.text; // Or whatever structure your API returns
+    } else {
+      throw new Error("Invalid response format from AI API.");
+    }
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      const errResponse = error.response.data as { error?: string };
+      console.error("AI API Response Error:", errResponse);
+      throw new Error(errResponse.error || "Failed to get AI response");
+    } else {
+      const message =
+        typeof error === "object" && error !== null && "message" in error
+          ? String((error as { message?: unknown }).message)
+          : "Network error occurred";
+      console.error("Network or server error:", message);
+      throw new Error(message);
+    }
+>>>>>>> 7e2d2eb1e45f184e402a52973f8b752a241208b6
   }
 };

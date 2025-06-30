@@ -2,34 +2,18 @@ import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
 // Configure axios
-axios.defaults.baseURL =
-  process.env.REACT_APP_API_BASE_URL || "https://hausasoft.onrender.com";
-// Remove global Content-Type header to avoid issues with requests like file uploads
-
-// Add request interceptor to set Authorization header if token exists
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("hausasoft_token");
-    if (token) {
-      config.headers = config.headers || {};
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+axios.defaults.baseURL = "https://hausasoft.onrender.com";
+axios.defaults.headers.common["Content-Type"] = "application/json";
 
 // Add response interceptor for error handling
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("API Error:", error.response?.data || error.message);
-    // Check for 401 and redirect to login if needed
     if (error.response?.status === 401) {
-      // You might want to clear local storage here too
       localStorage.removeItem("hausasoft_user");
       localStorage.removeItem("hausasoft_token");
-      // Optionally, handle redirect to login page here if needed.
+      // window.location.href = '/login'; // Or use navigate from react-router-dom if available outside components
     }
     return Promise.reject(error);
   }
@@ -57,7 +41,7 @@ interface AuthContextType {
     name: string,
     email: string,
     password: string,
-    confirmPassword: string,
+    confirm_password: string,
     role: UserRole
   ) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
@@ -79,7 +63,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
     const storedUser = localStorage.getItem("hausasoft_user");
     if (storedUser) {
       try {
@@ -105,7 +88,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         { email, password }
       );
       const { access } = response.data;
-      // Fetch user profile
       const userRes = await axios.get<User>("/api/users/me/", {
         headers: { Authorization: `Bearer ${access}` },
       });
@@ -116,8 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return { success: true, message: "Login successful!" };
     } catch (error: any) {
       setLoading(false);
-      let message = "Invalid email or password. Please try again.";
-      if (error.response?.data?.detail) message = error.response.data.detail;
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Invalid email or password.";
       return { success: false, message };
     }
   };
@@ -137,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           name,
           email,
           password,
-          confirmPassword,
+          confirm_password: confirmPassword, // Fixed: was "ConfirmPassword"
           role,
         }
       );
@@ -151,6 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error: any) {
       setLoading(false);
       const errorMessage =
+        error.response?.data?.detail ||
         error.response?.data?.error ||
         error.response?.data?.message ||
         "Registration failed. Please try again.";
@@ -162,12 +148,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
     localStorage.removeItem("hausasoft_user");
     localStorage.removeItem("hausasoft_token");
-    // Remove Authorization header from axios defaults
-    if (axios.defaults.headers) {
-      if (axios.defaults.headers.common) {
-        delete axios.defaults.headers.common["Authorization"];
-      }
-    }
   };
 
   return (

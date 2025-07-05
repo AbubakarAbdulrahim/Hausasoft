@@ -288,7 +288,7 @@ const RegisterPage: React.FC = () => {
                 <input
                   type="radio"
                   name="role"
-                  value="instructor"
+                  value="instructor"e
                   checked={role === "instructor"}
                   onChange={() => setRole("instructor")}
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500"

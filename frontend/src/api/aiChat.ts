@@ -8,48 +8,28 @@ export const sendMessage = async (message: string) => {
   }
 
   try {
-<<<<<<< HEAD
+    // Make request to AI endpoint (GET or POST depending on your backend logic)
     const response = await axios.get(`${API_BASE_URL}/learn-with-ai/`, {
       params: { message },
     });
 
     return { response: response.data.text };
-  } catch (error: any) {
-    if (error.response) {
-      // Log full response for debugging
-      console.error("AI API Response Error:", error.response.data);
-      throw new Error(error.response.data.error || "Failed to get AI response");
-    }
-
-    console.error("Network or server error:", error.message);
-    throw new Error("Network error occurred");
-
-    const response = await axios.get(`${API_BASE_URL}/learn-with-ai/`, {
-      params: { message },
-    });
-
-    if (
-      response.data &&
-      typeof response.data === "object" &&
-      "text" in response.data
-    ) {
-      return response.data.text; // Or whatever structure your API returns
-    } else {
-      throw new Error("Invalid response format from AI API.");
-    }
   } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      const errResponse = error.response.data as { error?: string };
-      console.error("AI API Response Error:", errResponse);
-      throw new Error(errResponse.error || "Failed to get AI response");
-    } else {
-      const message =
-        typeof error === "object" && error !== null && "message" in error
-          ? String((error as { message?: unknown }).message)
-          : "Network error occurred";
-      console.error("Network or server error:", message);
-      throw new Error(message);
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const err = error as {
+        response: { data: { error?: string; [key: string]: any } };
+      };
+      // Log full response for debugging
+      console.error("AI API Response Error:", err.response.data);
+      throw new Error(err.response.data.error || "Failed to get AI response");
     }
->>>>>>> 7e2d2eb1e45f184e402a52973f8b752a241208b6
+
+    if (error instanceof Error) {
+      console.error("Network or server error:", error.message);
+      throw new Error("Network error occurred");
+    }
+
+    console.error("An unknown error occurred");
+    throw new Error("An unknown error occurred");
   }
 };

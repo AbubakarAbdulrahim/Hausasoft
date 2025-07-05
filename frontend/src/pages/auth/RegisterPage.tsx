@@ -92,7 +92,9 @@ const RegisterPage: React.FC = () => {
         setShowModal(true);
         setTimeout(() => navigate("/login"), 2000);
       } else {
-        setError(result.message || "Registration failed.");
+        setError(
+          result.message || "Registration failed. Please try again later."
+        );
         setShowModal(true);
       }
     } catch (err: any) {
@@ -288,7 +290,7 @@ const RegisterPage: React.FC = () => {
                 <input
                   type="radio"
                   name="role"
-                  value="instructor"e
+                  value="instructor"
                   checked={role === "instructor"}
                   onChange={() => setRole("instructor")}
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500"

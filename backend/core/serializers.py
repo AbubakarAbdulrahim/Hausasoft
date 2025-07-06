@@ -3,10 +3,10 @@ from .models import User, Course, Enrollment, Progress, Achievement, Lesson, Qui
 from django.contrib.auth import get_user_model
 
 class UserSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='first_name', required=False)
+    #name = serializers.CharField(source='first_name', required=False)
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'email', 'role', 'avatar', 'language', 'name']
+        fields = ['id', 'username', 'email', 'role', 'avatar', 'language']
 
 class CourseSerializer(serializers.ModelSerializer):
     instructor = UserSerializer(read_only=True)

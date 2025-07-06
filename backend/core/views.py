@@ -465,7 +465,7 @@ class RegisterView(APIView):
             user = User.objects.create(
                 username=data['email'],
                 email=data['email'],
-                first_name=data['name'],
+                #first_name=data['name'],
                 password=make_password(data['password'])
             )
 
@@ -492,11 +492,11 @@ class RegisterView(APIView):
 # Updated UserSerializer to include role from groups
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
-    name = serializers.CharField(source='first_name', read_only=True)
+    #name = serializers.CharField(source='first_name', read_only=True)
     
     class Meta:
         model = get_user_model()
-        fields = ['id', 'email', 'name', 'role']
+        fields = ['id', 'email', 'role']
     
     def get_role(self, obj):
         # Get role from user's groups

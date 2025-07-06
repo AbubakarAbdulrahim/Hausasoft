@@ -486,7 +486,7 @@ class RegisterView(APIView):
             print(f"Request data: {data}")
             
             return Response({
-                'error': f'Registration failed: {str(e)}'  # Show actual error for debugging
+                'error': f'Registration failed, Please try again later.',
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Updated UserSerializer to include role from groups

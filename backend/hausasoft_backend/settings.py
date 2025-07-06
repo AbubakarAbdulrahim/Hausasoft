@@ -13,7 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(',')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
+
 
 # APPLICATIONS
 INSTALLED_APPS = [
@@ -132,14 +134,14 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 
-# ✅ CORS SETTINGS
+# CORS SETTINGS
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "https://www.hausasoft.com.ng",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# ✅ Ensure required headers are allowed
+# required headers are allowed
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'access-control-allow-origin',
     'authorization',
